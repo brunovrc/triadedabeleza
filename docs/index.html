@@ -1,0 +1,2224 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tríade da Beleza — Salão</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+
+    /* ─── RESET ─────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    img { display: block; max-width: 100%; }
+    a  { color: inherit; }
+
+    /* Antialiasing — evita distorção em textos claros sobre fundo escuro */
+    .sc, footer, .galeria, .nav-drawer {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ─── DESIGN TOKENS ─────────────────────────────────────────────────── */
+    :root {
+        --oat:        #F3EEE5;
+        --oat-deep:   #EBE4D8;
+        --oat-border: #D9D1C4;
+        --white:      #FAFAF7;
+        --gold:       #C09540;
+        --gold-lt:    #D4A84E;
+        --gold-dk:    #9A7830;
+        --dark:       #2A2826;
+        --mid:        #48453F;
+        --gray:       #7A746C;
+        --gray-lt:    #B0AAA4;
+        --foot:       #1D1B19;
+
+        --serif: 'Cormorant Garamond', Georgia, serif;
+        --sans:  'Montserrat', system-ui, sans-serif;
+
+        /* Layout */
+        --gutter:  20px;
+        --section: 72px;
+        --max:     1280px;
+    }
+
+    /* ─── BASE — mobile first ────────────────────────────────────────────── */
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+        background: var(--oat);
+        color: var(--dark);
+        font-family: var(--sans);
+        font-weight: 400;
+        font-size: 1rem;          /* 16px — never below this on body */
+        line-height: 1.7;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ─── PRELOADER ─────────────────────────────────────────────────────── */
+    #preloader {
+        position: fixed; inset: 0; z-index: 99999;
+        background: var(--oat);
+        display: flex; align-items: center; justify-content: center;
+        animation: pl-bg-out .55s cubic-bezier(.4,0,1,1) 2.3s forwards;
+    }
+    #preloader img {
+        height: 371px; width: auto;
+        animation: pl-logo 2.5s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    #preloader::after {
+        content: '';
+        position: absolute;
+        top: calc(50% + 205px);
+        left: 50%; width: 80px; height: 1px;
+        background: linear-gradient(to right, transparent, var(--gold), transparent);
+        transform: translateX(-50%) scaleX(0);
+        animation: pl-line 1.1s cubic-bezier(.22,1,.36,1) .55s forwards;
+    }
+    @keyframes pl-logo {
+        0%   { opacity: 0; transform: scale(.88) translateY(20px); }
+        30%  { opacity: 1; transform: scale(1) translateY(0); }
+        78%  { opacity: 1; transform: scale(1) translateY(0); }
+        100% { opacity: 0; transform: scale(1.04) translateY(-10px); }
+    }
+    @keyframes pl-line {
+        0%   { transform: translateX(-50%) scaleX(0); opacity: 0; }
+        40%  { opacity: .75; }
+        75%  { transform: translateX(-50%) scaleX(1); opacity: .55; }
+        100% { transform: translateX(-50%) scaleX(1); opacity: 0; }
+    }
+    @keyframes pl-bg-out {
+        to { opacity: 0; pointer-events: none; }
+    }
+
+    /* ─── GRAIN OVERLAY ─────────────────────────────────────────────────── */
+    body::after {
+        content: '';
+        position: fixed; inset: 0;
+        pointer-events: none;
+        z-index: 9000;
+        opacity: 0.022;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 200px 200px;
+        animation: grain .4s steps(1) infinite;
+    }
+    @keyframes grain {
+        0%   { background-position: 0 0; }
+        20%  { background-position: -12% 8%; }
+        40%  { background-position: 7% -20%; }
+        60%  { background-position: 14% 5%; }
+        80%  { background-position: -4% 22%; }
+        100% { background-position: 0 0; }
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────────────────────────── */
+    .wrap {
+        width: 100%;
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 0 var(--gutter);
+    }
+
+    section { padding: var(--section) 0; }
+
+    /* ─── TYPOGRAPHY SCALE ───────────────────────────────────────────────── */
+    /*
+       Eyebrow  : 12px / Jost 400 uppercase — label, never below 12px
+       Body     : 16px / Jost 300
+       Small    : 14px / Jost 300 — card body, footer links
+       H3       : 22px / Cormorant — card titles
+       H2       : clamp(30px, 6vw, 52px) / Cormorant
+       H1       : clamp(44px, 10vw, 110px) / Cormorant
+       Display  : line-height 1.12 for serif headings
+    */
+
+    h1, h2, h3, h4 {
+        font-family: var(--serif);
+        font-weight: 300;
+        line-height: 1.15;
+        letter-spacing: 0.01em;
+    }
+
+    .eyebrow {
+        display: block;
+        font-family: var(--sans);
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 16px;
+    }
+
+    /* ─── REVEAL ─────────────────────────────────────────────────────────── */
+    .r {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity .85s ease, transform .85s ease;
+    }
+    .r.on { opacity: 1; transform: none; }
+    .r.d1 { transition-delay: .10s; }
+    .r.d2 { transition-delay: .20s; }
+    .r.d3 { transition-delay: .32s; }
+    .r.d4 { transition-delay: .44s; }
+
+    /* ─── BUTTONS ────────────────────────────────────────────────────────── */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-family: var(--sans);
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-decoration: none;
+        white-space: nowrap;
+        border: none;
+        cursor: pointer;
+        min-height: 44px;
+        padding: 0 24px;
+        border-radius: 2px;
+        transition: background .3s, color .3s, border-color .3s, transform .2s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-gold { background: var(--gold); color: var(--white); }
+    .btn-gold:hover { background: var(--gold-dk); }
+
+    .btn-line {
+        background: transparent;
+        color: var(--dark);
+        border: 1px solid var(--oat-border);
+    }
+    .btn-line:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ─── NAV ────────────────────────────────────────────────────────────── */
+    nav {
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 500;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px var(--gutter);
+        transition: background .45s, padding .35s, backdrop-filter .45s, transform .35s cubic-bezier(.4,0,.2,1);
+    }
+    nav.up {
+        background: rgba(243,238,229,.88);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+    nav.nav-hidden {
+        transform: translateY(-110%);
+    }
+
+    .logo {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--dark);
+        line-height: 1;
+        position: relative;
+        z-index: 1;
+    }
+    .logo em { font-style: normal; color: var(--gold); }
+
+    /* ── Ícone da nav (monograma oval — texto cortado por overflow) ────── */
+    .nav-icon {
+        position: fixed;
+        top: 8px;
+        left: var(--gutter);
+        z-index: 1002;
+        display: block;
+        text-decoration: none;
+        transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .3s;
+    }
+    .nav-icon img {
+        display: block;
+        height: 60px;
+        width: auto;
+    }
+    .nav-icon.nav-hidden { transform: translateY(-110%); opacity: 0; }
+
+    /* ── Logo completa na hero ──────────────────────────────────────────── */
+    .hero-logo { margin-bottom: 12px; display: flex; justify-content: center; }
+    .hero-logo img {
+        display: block;
+        height: 221px;
+        width: auto;
+    }
+
+    /* Logo rodapé */
+    .logo img { display: block; width: auto; }
+    .logo-foot img {
+        height: 180px;
+        filter: brightness(1.1);   /* realça o dourado sobre fundo escuro */
+    }
+
+    /* ─── NAV PILL (desktop) ─────────────────────────────────────────────── */
+    .nav-pill {
+        display: none;
+        padding: 6px;
+        border-radius: 16px;
+        background: linear-gradient(to bottom, rgba(243,238,229,.88), rgba(243,238,229,.60));
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(217,209,196,.55);
+        box-shadow: 0 4px 20px rgba(42,40,38,.07), inset 0 1px 0 rgba(255,255,255,.55);
+        position: relative;
+    }
+
+    /* Radial glow no container ao hover */
+    .nav-pill::before {
+        content: '';
+        position: absolute;
+        inset: -14px;
+        background: radial-gradient(ellipse at 50% 50%, rgba(192,149,64,.14) 0%, transparent 68%);
+        border-radius: 30px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .5s ease;
+        z-index: -1;
+    }
+    .nav-pill:hover::before { opacity: 1; }
+
+    .nav-pill-list {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-pill-item { position: relative; }
+
+    .nav-pill-item a {
+        display: block;
+        text-decoration: none;
+        border-radius: 10px;
+        position: relative;
+        perspective: 600px;
+    }
+
+    /* Glow individual por item */
+    .item-glow {
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        background: radial-gradient(circle at 50% 50%, rgba(192,149,64,.32), rgba(154,120,48,.12) 50%, transparent 75%);
+        opacity: 0;
+        transform: scale(.8);
+        transition: opacity .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.4,0,.2,1);
+        pointer-events: none;
+        z-index: 0;
+    }
+    .nav-pill-item:hover .item-glow,
+    .nav-pill-item.is-active .item-glow {
+        opacity: 1;
+        transform: scale(2);
+    }
+
+    .item-inner { position: relative; z-index: 1; }
+
+    /* Faces do flip */
+    .item-front, .item-back {
+        display: flex;
+        align-items: center;
+        padding: 9px 18px;
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 400;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        border-radius: 10px;
+    }
+    .item-front {
+        color: var(--mid);
+        transform-origin: center bottom;
+        transform: rotateX(0deg);
+        opacity: 1;
+        transition: transform .45s cubic-bezier(.4,0,.2,1), opacity .3s;
+    }
+    .item-back {
+        color: var(--dark);
+        position: absolute;
+        inset: 0;
+        transform-origin: center top;
+        transform: rotateX(90deg);
+        opacity: 0;
+        transition: transform .45s cubic-bezier(.4,0,.2,1), opacity .3s;
+    }
+    .nav-pill-item:hover .item-front { transform: rotateX(-90deg); opacity: 0; }
+    .nav-pill-item:hover .item-back  { transform: rotateX(0deg);   opacity: 1; }
+    .nav-pill-item.is-active .item-front { color: var(--dark); }
+
+    /* Hamburger */
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 8px;
+        z-index: 600;
+    }
+    .hamburger span {
+        display: block;
+        width: 24px;
+        height: 1.5px;
+        background: var(--dark);
+        transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    .nav-drawer {
+        position: fixed;
+        inset: 0;
+        background: var(--oat);
+        z-index: 490;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        transform: translateX(100%);
+        transition: transform .45s cubic-bezier(.77,0,.18,1);
+    }
+    .nav-drawer.open { transform: none; }
+    .nav-drawer a {
+        font-family: var(--serif);
+        font-size: 36px;
+        font-weight: 300;
+        color: var(--dark);
+        text-decoration: none;
+        letter-spacing: 0.04em;
+        transition: color .2s;
+    }
+    .nav-drawer a:hover { color: var(--gold); }
+
+    /* ─── HERO ───────────────────────────────────────────────────────────── */
+    .hero {
+        position: relative;
+        min-height: 100svh;
+        background: var(--oat);        /* off-white como base */
+        overflow: hidden;
+        display: flex;
+        align-items: stretch;
+    }
+
+    /* Mobile: vídeo como background com overlay claro */
+    .hero-video-wrap {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+    }
+    .hero-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        opacity: .18;                  /* bem sutil no mobile — leve textura */
+    }
+
+    /* overlay mobile: mantém o oat claro sobre o vídeo */
+    .hero-overlay {
+        position: absolute; inset: 0;
+        z-index: 1;
+        background: linear-gradient(
+            to right,
+            rgba(243,238,229,.96) 0%,
+            rgba(243,238,229,.82) 100%
+        );
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: flex-start;
+        width: 100%;
+        padding: 72px var(--gutter) 0;
+    }
+
+    .hero-left { width: 100%; text-align: center; }
+
+    .hero-tag {
+        display: block;
+        font-family: var(--sans);
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 22px;
+        opacity: 0;
+        animation: up 1s .3s ease forwards;
+    }
+
+    .hero-h1 {
+        font-size: clamp(36px, 9vw, 56px);   /* mobile caberá em ~2 linhas */
+        font-weight: 300;
+        line-height: 1.15;
+        color: var(--dark);
+        opacity: 0;
+        animation: up 1s .5s ease forwards;
+    }
+    .hero-h1 em { font-style: italic; color: var(--gold-lt); }
+
+    /* ── Hero animated word ─────────────────────────────────────────────── */
+    .hero-anim-word {
+        font-style: italic;
+        color: var(--gold-lt);
+        position: relative;
+        display: inline-block;
+        white-space: nowrap;
+        /* Cria contexto de empilhamento isolado para z-index do ::after */
+        isolation: isolate;
+    }
+
+
+    /* Letter spans: acima do underline dentro do contexto isolado */
+    .hero-anim-letter { display: inline-block; position: relative; z-index: 0; }
+    .hero-h1.letters-active .hero-anim-letter {
+        animation: hero-letter-wave .55s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes hero-letter-wave {
+        0%   { transform: translateY(0px);  opacity: 1; }
+        38%  { transform: translateY(-7px); opacity: .85; }
+        100% { transform: translateY(0px);  opacity: 1; }
+    }
+
+    .hero-p {
+        margin-top: 22px;
+        font-size: 17px;
+        font-weight: 500;
+        color: var(--dark);
+        white-space: normal;
+        max-width: none;
+        line-height: 1.8;
+        opacity: 0;
+        animation: up 1s .7s ease forwards;
+    }
+
+    .hero-btns {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 44px;
+        opacity: 0;
+        animation: up 1s .9s ease forwards;
+    }
+    .hero-btns .btn { width: 100%; }
+
+    /* btn-gold na hero — fundo branco, texto escuro, hover dourado */
+    .hero-btns .btn-gold {
+        background: var(--white);
+        color: var(--dark);
+    }
+    .hero-btns .btn-gold:hover {
+        background: var(--gold);
+        color: var(--white);
+    }
+
+    /* btn-line na hero — fundo branco, hover dourado */
+    .hero-btns .btn-line {
+        color: var(--dark);
+        border-color: var(--oat-border);
+        background: var(--white);
+    }
+    .hero-btns .btn-line:hover {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: var(--white);
+    }
+
+    .hero-scroll {
+        position: absolute;
+        bottom: 28px; left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        opacity: 0;
+        animation: fadein 1s 1.5s ease forwards;
+    }
+    .hero-scroll span {
+        font-family: var(--sans);
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gray-lt);
+    }
+    .scroll-bar {
+        width: 1px; height: 40px;
+        background: linear-gradient(to bottom, var(--gold), transparent);
+        animation: pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+        0%,100% { opacity: .3; transform: scaleY(1); }
+        50% { opacity: 1; transform: scaleY(1.15); }
+    }
+
+    @keyframes up {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: none; }
+    }
+    @keyframes fadein {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    /* ─── SOBRE ──────────────────────────────────────────────────────────── */
+    .sobre { background: var(--white); }
+
+    .sobre-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 48px;
+    }
+
+    .img-frame {
+        width: 100%;
+        aspect-ratio: 4/3;
+        background: var(--oat-deep);
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+    }
+    .img-frame img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .img-frame::after {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(135deg, transparent 55%, rgba(192,149,64,.08));
+        pointer-events: none;
+    }
+    .img-frame-label {
+        font-family: var(--serif);
+        font-size: 15px;
+        font-style: italic;
+        letter-spacing: 0.1em;
+        color: var(--oat-border);
+    }
+
+    .img-badge {
+        position: absolute;
+        bottom: 0; right: 0;
+        background: var(--gold);
+        color: var(--white);
+        padding: 18px 24px;
+        border-radius: 0 0 4px 0;
+    }
+    .img-badge strong {
+        display: block;
+        font-family: var(--serif);
+        font-size: 34px;
+        font-weight: 300;
+        line-height: 1;
+    }
+    .img-badge small {
+        font-family: var(--sans);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.7);
+        margin-top: 2px;
+        display: block;
+    }
+
+    .sobre-text h2 {
+        font-size: clamp(30px, 6vw, 50px);
+        margin-bottom: 20px;
+    }
+    .sobre-text p {
+        font-size: 16px;
+        color: var(--gray);
+        line-height: 1.8;
+        margin-bottom: 16px;
+    }
+
+    .valores {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-top: 36px;
+    }
+    .valor {
+        border-left: 2px solid var(--gold);
+        padding-left: 14px;
+    }
+    .valor strong {
+        display: block;
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--dark);
+        margin-bottom: 6px;
+        line-height: 1.3;
+    }
+    .valor span {
+        font-family: var(--sans);
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--gray);
+        line-height: 1.6;
+        overflow-wrap: break-word;
+    }
+
+    /* ─── SERVIÇOS ───────────────────────────────────────────────────────── */
+    .servicos { background: var(--oat-deep); }
+
+    .sec-head {
+        text-align: center;
+        margin-bottom: 48px;
+    }
+    .sec-head h2 {
+        font-size: clamp(30px, 7vw, 58px);
+        color: var(--dark);
+    }
+    .sec-head p {
+        font-size: 16px;
+        color: var(--gray);
+        max-width: 440px;
+        margin: 14px auto 0;
+        line-height: 1.75;
+    }
+
+    /* ─── SERVIÇOS — IMAGE CARDS ────────────────────────────────────────── */
+    .serv-cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 56px;
+    }
+
+    .sc {
+        position: relative;
+        height: 420px;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        contain: layout paint;
+    }
+
+    /* Background — placeholder gradient (trocar por background-image real) */
+    .sc-img {
+        position: absolute; inset: 0;
+        background-size: cover;
+        background-position: center;
+        transform: scale(1);
+        transition: transform .9s cubic-bezier(.4,0,.2,1);
+        z-index: 0;
+    }
+    .sc[data-cat="cabelo"]       .sc-img { background: linear-gradient(150deg,#120c04 0%,#4a3010 55%,#1e1206 100%); }
+    .sc[data-cat="unhas"]        .sc-img { background: linear-gradient(150deg,#100e06 0%,#3e2c0c 55%,#1a1406 100%); }
+    .sc[data-cat="sobrancelhas"] .sc-img { background: linear-gradient(150deg,#141008 0%,#3a2c14 55%,#1c1808 100%); }
+    .sc[data-cat="estetica"]     .sc-img { background: linear-gradient(150deg,#0e0c06 0%,#362810 55%,#181408 100%); }
+
+    /* Vídeo dentro do card */
+    .sc-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* will-change aplicado via JS só quando visível — evita 4 camadas GPU permanentes */
+
+
+    /* Gradient overlay — usa 2 pseudo-elementos com opacity (compositor-only, sem paint) */
+    .sc-overlay {
+        position: absolute; inset: 0; z-index: 1;
+    }
+    .sc-overlay::before,
+    .sc-overlay::after {
+        content: '';
+        position: absolute; inset: 0;
+        transition: opacity .55s;
+    }
+    .sc-overlay::before {
+        background: linear-gradient(to top,
+            rgba(6,4,2,.96) 0%,
+            rgba(6,4,2,.52) 42%,
+            rgba(6,4,2,.08) 72%,
+            transparent 100%);
+        opacity: 1;
+    }
+    .sc-overlay::after {
+        background: linear-gradient(to top,
+            rgba(6,4,2,.98) 0%,
+            rgba(6,4,2,.75) 48%,
+            rgba(6,4,2,.22) 78%,
+            transparent 100%);
+        opacity: 0;
+    }
+
+    /* Body: full card, flex column */
+    .sc-body {
+        position: absolute; inset: 0; z-index: 2;
+        display: flex; flex-direction: column;
+        padding: 22px 26px 0;
+    }
+
+    /* Spacer: absorbs the upward travel of sc-main */
+    .sc-spacer { flex: 1; }
+
+    /* Main: title + tagline — fades up on hover */
+    .sc-main {
+        transform: translateY(0);
+        opacity: 1;
+        transition: transform .55s cubic-bezier(.4,0,.2,1), opacity .38s;
+        padding-bottom: 26px;
+        /* Subtle gradient veil behind the text block */
+        position: relative;
+    }
+    .sc-main::before {
+        content: '';
+        position: absolute;
+        inset: -32px -26px -0px -26px;
+        background: linear-gradient(to top,
+            rgba(8,6,4,.72) 0%,
+            rgba(8,6,4,.40) 55%,
+            transparent 100%);
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .sc-title {
+        font-family: var(--serif);
+        font-size: clamp(36px, 5.5vw, 52px);
+        font-weight: 300;
+        color: var(--oat);
+        line-height: 1.06;
+        margin-bottom: 10px;
+        letter-spacing: -.01em;
+    }
+    .sc-title em { font-style: italic; color: var(--gold-lt); }
+
+    .sc-tagline {
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: clamp(16px, 2vw, 19px);
+        font-weight: 300;
+        color: rgba(212,168,78,.85);
+        line-height: 1.5;
+        letter-spacing: .01em;
+    }
+
+    /* Reveal: services + CTA — compositor-only (transform, não bottom) */
+    .sc-reveal {
+        position: absolute;
+        bottom: 0;
+        left: 0; right: 0;
+        padding: 0 26px 26px;
+        opacity: 0;
+        transform: translateY(400px);
+        transition: transform .55s cubic-bezier(.4,0,.2,1), opacity .4s;
+        z-index: 3;
+    }
+
+    /* Services list */
+    .sc-list {
+        list-style: none; margin: 0 0 18px; padding: 0;
+    }
+    .sc-list li {
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 400;
+        color: rgba(243,238,229,.93);
+        padding: 10px 0 10px 18px;
+        border-bottom: 1px solid rgba(255,255,255,.08);
+        position: relative;
+        letter-spacing: .03em;
+        line-height: 1.4;
+    }
+    .sc-list li:first-child { border-top: 1px solid rgba(255,255,255,.08); }
+    .sc-list li:last-child  { border-bottom: none; }
+    .sc-list li::before {
+        content: '';
+        position: absolute;
+        left: 2px;
+        top: calc(50% - 2px);
+        width: 4px; height: 4px;
+        border-radius: 50%;
+        background: var(--gold);
+        opacity: .85;
+    }
+    .sc-list.two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(4, auto);
+        grid-auto-flow: column;
+        column-gap: 24px;
+    }
+    .sc-list.two-col li:nth-child(5) { border-top: 1px solid rgba(255,255,255,.08); }
+
+    /* CTA dentro do card */
+    .sc-cta {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-family: var(--sans);
+        font-size: 11px; font-weight: 400;
+        letter-spacing: .12em; text-transform: uppercase;
+        text-decoration: none;
+        color: var(--dark);
+        background: var(--gold-lt);
+        padding: 11px 22px;
+        border-radius: 2px;
+        white-space: nowrap;
+        transition: background .3s;
+    }
+    .sc-cta:hover { background: var(--gold); }
+
+    /* ── Hover / Active states — apenas propriedades compositor-only ── */
+    @media (hover: hover) {
+        .sc:hover .sc-img                { transform: scale(1.07); will-change: transform; }
+        .sc:hover .sc-overlay::before    { opacity: 0; }
+        .sc:hover .sc-overlay::after     { opacity: 1; }
+        .sc:hover .sc-main               { transform: translateY(-88px); opacity: 0; }
+        .sc:hover .sc-reveal             { transform: translateY(0); opacity: 1; }
+    }
+    .sc.active .sc-img             { transform: scale(1.05); will-change: transform; }
+    .sc.active .sc-overlay::before { opacity: 0; }
+    .sc.active .sc-overlay::after  { opacity: 1; }
+    .sc.active .sc-main            { transform: translateY(-88px); opacity: 0; }
+    .sc.active .sc-reveal          { transform: translateY(0); opacity: 1; }
+
+    /* ─── GALERIA ────────────────────────────────────────────────────────── */
+    .galeria { background: var(--dark); }
+    .galeria .eyebrow { color: var(--gold-lt); }
+    .galeria .sec-head h2 { color: var(--oat); }
+    .galeria .sec-head p  {
+        color: var(--oat);
+        font-size: clamp(15px, 2.2vw, 19px);
+        opacity: .80;
+        max-width: 480px;
+    }
+
+    /* ── Coverflow carousel ──────────────────────────────────────────────── */
+    .cf-gallery {
+        position: relative;
+        width: 100%;
+        margin-top: 48px;
+    }
+    .cf-viewport {
+        width: 100%;
+        height: 300px;
+        perspective: 1000px;
+        overflow: hidden;
+        cursor: grab;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    .cf-viewport:active { cursor: grabbing; }
+    .cf-track {
+        position: relative;
+        width: 100%; height: 100%;
+        transform-style: preserve-3d;
+    }
+    .cf-slide {
+        position: absolute;
+        width: 200px;
+        top: 50%; left: 50%;
+        transition: transform .5s cubic-bezier(.4,0,.2,1), opacity .5s;
+        will-change: transform, opacity;
+    }
+    .cf-card {
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 16px 48px rgba(0,0,0,.60);
+    }
+    .cf-card img {
+        width: 100%; height: 100%;
+        object-fit: cover; display: block;
+        pointer-events: none;
+        -webkit-user-drag: none;
+    }
+    .cf-label {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        padding: 32px 14px 14px;
+        background: linear-gradient(to top, rgba(0,0,0,.82) 0%, transparent 100%);
+        font-family: var(--sans);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--oat);
+        -webkit-font-smoothing: antialiased;
+    }
+    /* Pagination dots */
+    .cf-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 20px;
+    }
+    .cf-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: rgba(192,149,64,.25);
+        border: none;
+        cursor: pointer;
+        transition: background .3s, transform .3s;
+        padding: 0;
+    }
+    .cf-dot.active {
+        background: var(--gold);
+        transform: scale(1.5);
+    }
+    /* Nav arrows */
+    .cf-nav {
+        position: absolute;
+        top: calc(50% - 18px);
+        transform: translateY(-50%);
+        z-index: 20;
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(192,149,64,.30);
+        background: rgba(30,28,26,.55);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: background .2s, border-color .2s;
+        color: var(--oat);
+    }
+    .cf-nav:hover { background: rgba(192,149,64,.25); border-color: var(--gold); }
+    .cf-nav svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .cf-prev { left: 8px; }
+    .cf-next { right: 8px; }
+
+    /* ─── EXPERIÊNCIA ────────────────────────────────────────────────────── */
+    .experiencia {
+        background: var(--oat-deep);
+        position: relative;
+        overflow: hidden;
+    }
+    .experiencia::before {
+        content: 'TRÍADE';
+        position: absolute;
+        font-family: var(--serif);
+        font-size: clamp(80px, 22vw, 280px);
+        font-weight: 300;
+        color: transparent;
+        -webkit-text-stroke: 1px rgba(192,149,64,.06);
+        top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
+        white-space: nowrap;
+        pointer-events: none;
+        letter-spacing: .1em;
+    }
+
+    .exp-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2px;
+        margin-top: 44px;
+        background: var(--oat-border);
+        position: relative;
+    }
+    .exp-card {
+        background: var(--oat-deep);
+        padding: 44px 28px;
+        text-align: center;
+    }
+    .exp-num {
+        font-family: var(--serif);
+        font-size: 48px;
+        font-weight: 300;
+        color: var(--gold);
+        line-height: 1;
+        margin-bottom: 12px;
+    }
+    .exp-card h3 {
+        font-size: 22px;
+        font-weight: 400;
+        color: var(--dark);
+        margin-bottom: 10px;
+        line-height: 1.25;
+    }
+    .exp-card p {
+        font-size: 15px;
+        color: var(--gray);
+        line-height: 1.7;
+    }
+
+    /* ─── AGENDAMENTO ────────────────────────────────────────────────────── */
+    .agendamento { background: var(--white); }
+
+    .agenda-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 52px;
+    }
+
+    .agenda-text h2 {
+        font-size: clamp(30px, 7vw, 52px);
+        color: var(--dark);
+        margin-bottom: 18px;
+        line-height: 1.2;
+    }
+    .agenda-text > p {
+        font-size: 16px;
+        color: var(--gray);
+        line-height: 1.8;
+        margin-bottom: 36px;
+    }
+
+    .wa-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 56px;
+        padding: 0 36px;
+        background: var(--gold);
+        color: var(--white);
+        font-family: var(--sans);
+        font-size: 14px;
+        font-weight: 400;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border-radius: 2px;
+        width: 100%;
+        justify-content: center;
+        transition: background .3s, transform .2s;
+    }
+    .wa-btn:hover { background: var(--gold-dk); transform: translateY(-2px); }
+    .wa-btn svg { width: 22px; height: 22px; fill: var(--white); flex-shrink: 0; }
+
+    .info-stack { display: flex; flex-direction: column; }
+
+    .info-block {
+        border-top: 1px solid var(--oat-border);
+        padding: 24px 0;
+    }
+    .info-block:last-child { border-bottom: 1px solid var(--oat-border); }
+
+    .info-block strong {
+        display: block;
+        font-family: var(--sans);
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 10px;
+    }
+    .info-block p,
+    .info-block address {
+        font-style: normal;
+        font-size: 15px;
+        color: var(--gray);
+        line-height: 1.9;
+    }
+
+    .map-block {
+        margin-top: 14px;
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        border: 1px solid var(--oat-border);
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--sans);
+        font-size: 13px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gray-lt);
+    }
+
+    /* ─── CTA FINAL ──────────────────────────────────────────────────────── */
+    .cta-final {
+        background: var(--dark);
+        text-align: center;
+        padding: 100px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    .cta-final::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse 80% 50% at 50% 120%,
+            rgba(192,149,64,.09), transparent);
+    }
+    .cta-z { position: relative; z-index: 1; }
+
+    .cta-final .eyebrow { color: var(--gold-lt); }
+    .cta-final h2 {
+        font-size: clamp(36px, 9vw, 80px);
+        color: var(--oat);
+        max-width: 640px;
+        margin: 0 auto 20px;
+        line-height: 1.15;
+    }
+    .cta-final h2 em { font-style: italic; color: var(--gold); }
+    .cta-final p {
+        font-size: 16px;
+        color: var(--gray-lt);
+        margin-bottom: 44px;
+        line-height: 1.7;
+    }
+    .cta-final .btn { min-width: 260px; }
+
+    /* ─── WHATSAPP FLUTUANTE ────────────────────────────────────────────── */
+    .whatsapp-float {
+        position: fixed;
+        bottom: 28px;
+        right: 24px;
+        z-index: 900;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #25D366;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(37,211,102,.40), 0 2px 6px rgba(0,0,0,.15);
+        transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s;
+    }
+    .whatsapp-float:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 24px rgba(37,211,102,.55), 0 3px 8px rgba(0,0,0,.18);
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────────────────── */
+    footer {
+        background: var(--foot);
+        color: var(--gray-lt);
+        padding: 64px 0 36px;
+    }
+
+    .ft-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 44px;
+        padding-bottom: 48px;
+        border-bottom: 1px solid rgba(255,255,255,.055);
+    }
+
+    .ft-brand .logo {
+        color: var(--oat);
+        display: inline-flex;
+        margin-bottom: 16px;
+    }
+    .ft-brand > p {
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--gray-lt);
+        max-width: 280px;
+    }
+    .ft-social {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+    }
+    .soc {
+        width: 40px; height: 40px;
+        border: 1px solid rgba(255,255,255,.12);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--gray-lt);
+        text-decoration: none;
+        text-decoration: none;
+        font-family: var(--serif);
+        font-size: 14px;
+        border-radius: 2px;
+        transition: border-color .3s, color .3s;
+    }
+    .soc:hover { border-color: currentColor; }
+    .soc-ig:hover { color: #C13584; border-color: #C13584; }
+    .soc-wa:hover { color: #25D366; border-color: #25D366; }
+    .soc-fb:hover { color: #1877F2; border-color: #1877F2; }
+
+    .ft-col h4 {
+        font-family: var(--sans);
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 18px;
+    }
+    .ft-col ul { list-style: none; }
+    .ft-col ul li { margin-bottom: 10px; }
+    .ft-col ul li a {
+        font-size: 14px;
+        color: var(--gray-lt);
+        text-decoration: none;
+        line-height: 1.6;
+        transition: color .3s;
+    }
+    .ft-col ul li a:hover { color: var(--gold-lt); }
+    .ft-col address {
+        font-style: normal;
+        font-size: 14px;
+        color: var(--gray-lt);
+        line-height: 2;
+    }
+
+    .ft-bottom {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-top: 28px;
+        text-align: center;
+    }
+    .ft-bottom p { font-size: 12px; color: rgba(176,170,164,.4); line-height: 1.6; }
+
+    /* ─── REDUCED MOTION ─────────────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+        .hero-line, .scroll-bar, body::after { animation: none !important; }
+        .hero-video { animation: none !important; }
+    }
+
+    /* ─── TABLET — min 640px ─────────────────────────────────────────────── */
+    @media (min-width: 640px) {
+        :root {
+            --gutter: 36px;
+            --section: 96px;
+        }
+
+        .hero-btns { flex-direction: row; }
+        .hero-btns .btn { width: auto; }
+
+        .img-frame { aspect-ratio: 4/3; }
+        .serv-cards { grid-template-columns: repeat(2, 1fr); }
+        .sc { height: 480px; }
+
+        .cf-viewport { height: 360px; }
+        .cf-slide { width: 240px; }
+        .cf-prev { left: 16px; }
+        .cf-next { right: 16px; }
+
+        .exp-grid { grid-template-columns: 1fr 1fr 1fr; }
+
+        .wa-btn { width: auto; }
+
+        .ft-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+
+        .ft-bottom { flex-direction: row; justify-content: space-between; text-align: left; }
+    }
+
+    /* ─── DESKTOP — min 960px ────────────────────────────────────────────── */
+    @media (min-width: 960px) {
+        :root {
+            --gutter: 56px;
+            --section: 128px;
+        }
+
+        /* Nav desktop */
+        nav { justify-content: center; padding: 24px var(--gutter); }
+        nav.up { padding: 14px var(--gutter); }
+        .nav-pill { display: block; }
+        .nav-icon img { height: 76px; }
+        .hero-logo img { height: 338px; }
+        .hamburger { display: none; }
+
+        /* Hero desktop — vídeo full-bleed, texto centralizado no topo */
+        .hero-video-wrap {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            z-index: 0;
+        }
+        .hero-video {
+            opacity: 1;
+            -webkit-mask-image: none;
+            mask-image: none;
+        }
+
+        /* Overlay: mancha oat pequena só atrás do bloco de texto */
+        .hero-overlay {
+            display: block;
+            background: radial-gradient(
+                ellipse 38% 30% at 50% 27%,
+                rgba(243,238,229,.88) 0%,
+                rgba(243,238,229,.48) 50%,
+                rgba(243,238,229,.04) 78%,
+                transparent 100%
+            );
+        }
+
+        .hero-content {
+            padding: 110px 40px 0;
+            max-width: none;
+            width: 100%;
+            min-height: 100svh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .hero-left {
+            width: 100%;
+            max-width: 660px;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .hero-btns { flex-direction: row; justify-content: center; }
+        .hero-btns .btn { width: auto; }
+
+        /* Maior no desktop, cabe em 2 linhas dentro dos 42% */
+        .hero-h1 { font-size: clamp(48px, 4.6vw, 68px); }
+
+        /* Hero */
+        .hero-p { font-size: 18px; }
+
+        /* Sobre */
+        .sobre-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: center;
+        }
+        .img-frame { aspect-ratio: 4/5; }
+        .sobre-text h2 { font-size: clamp(36px, 3.8vw, 52px); }
+
+        /* Serviços */
+        .serv-cards { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .sc { height: 540px; }
+
+        /* Galeria — coverflow desktop */
+        .cf-viewport { height: 430px; }
+        .cf-slide { width: 300px; }
+        .cf-prev { left: 32px; }
+        .cf-next { right: 32px; }
+
+        /* Agendamento */
+        .agenda-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: start;
+        }
+        .wa-btn { width: auto; }
+
+        /* Footer */
+        .ft-grid { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 56px; }
+    }
+
+    /* ─── WIDE — min 1280px ──────────────────────────────────────────────── */
+    @media (min-width: 1280px) {
+        :root { --gutter: 80px; }
+    }
+
+    </style>
+</head>
+<body>
+
+<!-- ═══ PRELOADER ══════════════════════════════════════════════════════════ -->
+<div id="preloader">
+    <img src="logo nova otimizada.png" alt="Tríade da Beleza">
+</div>
+
+<!-- ═══ ÍCONE NAV (monograma) ══════════════════════════════════════════════ -->
+<a href="#" class="nav-icon" id="nav-icon" aria-label="Tríade da Beleza">
+    <img src="só o icone.png" alt="Tríade da Beleza">
+</a>
+
+<!-- ═══ NAV ═══════════════════════════════════════════════════════════════ -->
+<nav id="nav">
+
+    <div class="nav-pill">
+        <ul class="nav-pill-list">
+            <li class="nav-pill-item" data-section="sobre">
+                <a href="#sobre">
+                    <div class="item-glow"></div>
+                    <div class="item-inner">
+                        <div class="item-front">O Salão</div>
+                        <div class="item-back">O Salão</div>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-pill-item" data-section="servicos">
+                <a href="#servicos">
+                    <div class="item-glow"></div>
+                    <div class="item-inner">
+                        <div class="item-front">Serviços</div>
+                        <div class="item-back">Serviços</div>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-pill-item" data-section="galeria">
+                <a href="#galeria">
+                    <div class="item-glow"></div>
+                    <div class="item-inner">
+                        <div class="item-front">Resultados</div>
+                        <div class="item-back">Resultados</div>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-pill-item" data-section="agendamento">
+                <a href="#agendamento">
+                    <div class="item-glow"></div>
+                    <div class="item-inner">
+                        <div class="item-front">Agendar</div>
+                        <div class="item-back">Agendar</div>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <button class="hamburger" id="ham" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- Mobile drawer -->
+<div class="nav-drawer" id="drawer">
+    <a href="#sobre"       onclick="closeMenu()">O Salão</a>
+    <a href="#servicos"    onclick="closeMenu()">Serviços</a>
+    <a href="#galeria"     onclick="closeMenu()">Resultados</a>
+    <a href="#agendamento" onclick="closeMenu()">Agendar</a>
+</div>
+
+<!-- ═══ HERO ══════════════════════════════════════════════════════════════ -->
+<section class="hero" id="hero">
+
+    <div class="hero-video-wrap">
+        <video class="hero-video"
+               src="video hero.mp4"
+               autoplay
+               muted
+               loop
+               playsinline
+               preload="auto">
+        </video>
+    </div>
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <div class="hero-left">
+            <h1 class="hero-h1">
+                Realce sua <em>beleza</em> com cuidado e sofisticação.
+            </h1>
+            <p class="hero-p">
+                Uma experiência completa para você se sentir ainda mais confiante.
+            </p>
+            <div class="hero-btns">
+                <a href="#agendamento" class="btn btn-gold">Agendar pelo WhatsApp</a>
+                <a href="#sobre" class="btn btn-line">Conhecer o salão</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-scroll">
+        <div class="scroll-bar"></div>
+        <span>Descer</span>
+    </div>
+</section>
+
+<!-- ═══ SOBRE ══════════════════════════════════════════════════════════════ -->
+<section class="sobre" id="sobre">
+    <div class="wrap">
+        <div class="sobre-grid">
+
+            <div class="sobre-img r">
+                <div class="img-frame">
+                    <img src="faixada.jpg" alt="Faixada da Tríade da Beleza" loading="lazy">
+                </div>
+            </div>
+
+            <div class="sobre-text">
+                <span class="eyebrow r">O Salão</span>
+                <h2 class="r d1">Um espaço feito para você se sentir em casa.</h2>
+                <p class="r d2">
+                    A Tríade da Beleza nasceu da ideia de que beleza não precisa ser complicada. Um salão onde cada cliente é tratada com atenção de verdade, onde o ambiente transmite calma e onde os resultados falam por si.
+                </p>
+                <p class="r d2">
+                    Aqui você encontra profissionais especializadas em cabelo, manicure e sobrancelha, prontas para cuidar de você do jeito certo.
+                </p>
+                <div class="valores">
+                    <div class="valor r d3">
+                        <strong>Atenção</strong>
+                        <span>Cada atendimento é único.</span>
+                    </div>
+                    <div class="valor r d3">
+                        <strong>Qualidade</strong>
+                        <span>Produtos que entregam resultado.</span>
+                    </div>
+                    <div class="valor r d4">
+                        <strong>Conforto</strong>
+                        <span>Um espaço para você respirar.</span>
+                    </div>
+                    <div class="valor r d4">
+                        <strong>Confiança</strong>
+                        <span>Transparência em cada etapa.</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══ SERVIÇOS ═══════════════════════════════════════════════════════════ -->
+<section class="servicos" id="servicos">
+    <div class="wrap">
+        <div class="sec-head">
+            <span class="eyebrow r">O que fazemos</span>
+            <h2 class="r d1">Serviços</h2>
+            <p class="r d2">Cuidado completo para cabelo, unhas e sobrancelhas.</p>
+        </div>
+
+        <div class="serv-cards">
+
+            <!-- 01 Cabelo -->
+            <div class="sc r" data-cat="cabelo">
+                <div class="sc-img">
+                    <video class="sc-video" src="Card Cabelo.mp4" muted loop playsinline preload="none"></video>
+                </div>
+                <div class="sc-overlay"></div>
+                <div class="sc-body">
+                    <div class="sc-spacer"></div>
+                    <div class="sc-main">
+                        <h3 class="sc-title">Cuidado completo<br><em>do fio.</em></h3>
+                        <p class="sc-tagline">Do corte ao tratamento profundo.</p>
+                    </div>
+                </div>
+                <div class="sc-reveal">
+                    <ul class="sc-list two-col">
+                        <li>Corte</li>
+                        <li>Escova &amp; Escova de Verniz</li>
+                        <li>Hidratação</li>
+                        <li>Progressiva &amp; Cauterização</li>
+                        <li>Tintura</li>
+                        <li>Luzes, Mechas &amp; Ombré Hair</li>
+                        <li>Morena Iluminada</li>
+                        <li>Penteados</li>
+                    </ul>
+                    <a href="https://wa.me/5544999641901?text=Olá!%20Gostaria%20de%20agendar%20um%20horário." target="_blank" rel="noopener" class="sc-cta">
+                        Agendar
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 02 Unhas -->
+            <div class="sc r d1" data-cat="unhas">
+                <div class="sc-img">
+                    <video class="sc-video" src="Card unhas.mp4" muted loop playsinline preload="none"></video>
+                </div>
+                <div class="sc-overlay"></div>
+                <div class="sc-body">
+                    <div class="sc-spacer"></div>
+                    <div class="sc-main">
+                        <h3 class="sc-title">Acabamento<br><em>que dura.</em></h3>
+                        <p class="sc-tagline">Manicure e pedicure com atenção ao detalhe.</p>
+                    </div>
+                </div>
+                <div class="sc-reveal">
+                    <ul class="sc-list">
+                        <li>Unhas em Gel</li>
+                        <li>Fibras &amp; Alongamentos</li>
+                        <li>Blindagem com Esmaltação em Gel</li>
+                        <li>Pé e Mão Tradicional</li>
+                    </ul>
+                    <a href="https://wa.me/5544999641901?text=Olá!%20Gostaria%20de%20agendar%20um%20horário." target="_blank" rel="noopener" class="sc-cta">
+                        Agendar
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 03 Sobrancelhas & Cílios -->
+            <div class="sc r d2" data-cat="sobrancelhas">
+                <div class="sc-img">
+                    <video class="sc-video" src="cílios e sobrancelha card.mp4" muted loop playsinline preload="none"></video>
+                </div>
+                <div class="sc-overlay"></div>
+                <div class="sc-body">
+                    <div class="sc-spacer"></div>
+                    <div class="sc-main">
+                        <h3 class="sc-title">O detalhe<br><em>que enquadra.</em></h3>
+                        <p class="sc-tagline">Design que transforma a expressão do olhar.</p>
+                    </div>
+                </div>
+                <div class="sc-reveal">
+                    <ul class="sc-list">
+                        <li>Design de Sobrancelha</li>
+                        <li>Henna de Sobrancelha</li>
+                        <li>Colocação de Cílios</li>
+                    </ul>
+                    <a href="https://wa.me/5544999641901?text=Olá!%20Gostaria%20de%20agendar%20um%20horário." target="_blank" rel="noopener" class="sc-cta">
+                        Agendar
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 04 Estética & Beleza -->
+            <div class="sc r d3" data-cat="estetica">
+                <div class="sc-img">
+                    <video class="sc-video" src="maquiagem.mp4" muted loop playsinline preload="none"></video>
+                </div>
+                <div class="sc-overlay"></div>
+                <div class="sc-body">
+                    <div class="sc-spacer"></div>
+                    <div class="sc-main">
+                        <h3 class="sc-title">Beleza<br><em>completa.</em></h3>
+                        <p class="sc-tagline">Acabamentos que completam o cuidado.</p>
+                    </div>
+                </div>
+                <div class="sc-reveal">
+                    <ul class="sc-list">
+                        <li>Maquiagem</li>
+                        <li>Depilação</li>
+                    </ul>
+                    <a href="https://wa.me/5544999641901?text=Olá!%20Gostaria%20de%20agendar%20um%20horário." target="_blank" rel="noopener" class="sc-cta">
+                        Agendar
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══ GALERIA ════════════════════════════════════════════════════════════ -->
+<section class="galeria" id="galeria">
+    <div class="wrap">
+        <div class="sec-head">
+            <span class="eyebrow">Resultados</span>
+            <h2>Resultados</h2>
+            <p>Cada foto é um antes e depois real das nossas clientes.</p>
+        </div>
+
+        <div class="cf-gallery" id="circGallery" aria-label="Galeria de resultados">
+            <div class="cf-viewport">
+                <div class="cf-track" id="circStage">
+                    <div class="cf-slide">
+                        <div class="cf-card">
+                            <img src="coloração cabelo.png" alt="Coloração" loading="lazy">
+                            <div class="cf-label">Coloração</div>
+                        </div>
+                    </div>
+                    <div class="cf-slide">
+                        <div class="cf-card">
+                            <img src="balayage.png" alt="Balayage" loading="lazy">
+                            <div class="cf-label">Balayage</div>
+                        </div>
+                    </div>
+                    <div class="cf-slide">
+                        <div class="cf-card">
+                            <img src="unha em gel.png" alt="Unhas em Gel" loading="lazy">
+                            <div class="cf-label">Unhas em Gel</div>
+                        </div>
+                    </div>
+                    <div class="cf-slide">
+                        <div class="cf-card">
+                            <img src="sobrancelha.png" alt="Sobrancelha" loading="lazy">
+                            <div class="cf-label">Sobrancelha</div>
+                        </div>
+                    </div>
+                    <div class="cf-slide">
+                        <div class="cf-card">
+                            <img src="hidratação.png" alt="Hidratação" loading="lazy">
+                            <div class="cf-label">Hidratação</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cf-dots" id="cfDots">
+                <button class="cf-dot active" aria-label="Slide 1"></button>
+                <button class="cf-dot" aria-label="Slide 2"></button>
+                <button class="cf-dot" aria-label="Slide 3"></button>
+                <button class="cf-dot" aria-label="Slide 4"></button>
+                <button class="cf-dot" aria-label="Slide 5"></button>
+            </div>
+            <button class="cf-nav cf-prev" aria-label="Anterior">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="cf-nav cf-next" aria-label="Próximo">
+                <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ EXPERIÊNCIA ════════════════════════════════════════════════════════ -->
+<section class="experiencia" id="experiencia">
+    <div class="wrap">
+        <div class="sec-head">
+            <span class="eyebrow r">Por que a Tríade</span>
+            <h2 class="r d1">A experiência<br><em>Tríade da Beleza</em></h2>
+            <p class="r d2">Mais do que um salão. Um espaço onde cada detalhe foi pensado para o seu bem-estar.</p>
+        </div>
+
+        <div class="exp-grid">
+            <div class="exp-card r">
+                <div class="exp-num">01</div>
+                <h3>Atendimento individualizado</h3>
+                <p>Sem pressa. Seu horário é reservado só para você.</p>
+            </div>
+            <div class="exp-card r d1">
+                <div class="exp-num">02</div>
+                <h3>Profissionais especializadas</h3>
+                <p>Cada área com quem entende do que está fazendo.</p>
+            </div>
+            <div class="exp-card r d2">
+                <div class="exp-num">03</div>
+                <h3>Ambiente acolhedor</h3>
+                <p>Um lugar onde você se sente bem desde que entra.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ AGENDAMENTO ════════════════════════════════════════════════════════ -->
+<section class="agendamento" id="agendamento">
+    <div class="wrap">
+        <div class="agenda-grid">
+
+            <div class="agenda-text">
+                <span class="eyebrow r">Agendar</span>
+                <h2 class="r d1">Marque seu horário pelo WhatsApp.</h2>
+                <p class="r d2">
+                    Atendemos por WhatsApp para facilitar o agendamento. Fale com a gente, escolha seu serviço e confirme o horário em minutos.
+                </p>
+                <a href="https://wa.me/5544999641901?text=Olá!%20Gostaria%20de%20agendar%20um%20horário."
+                   class="wa-btn r d3" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    Agendar agora
+                </a>
+            </div>
+
+            <div class="info-stack r d2">
+                <div class="info-block">
+                    <strong>Endereço</strong>
+                    <address>
+                        Av. Pioneiro Antônio Franco de Moraes, 1775<br>
+                        Jardim Brasil — Maringá, PR<br>
+                        CEP 87083-260
+                    </address>
+                    <div class="map-block">
+                        <iframe
+                            src="https://www.google.com/maps?q=Avenida+Pioneiro+Ant%C3%B4nio+Franco+de+Moraes,+1775,+Maring%C3%A1,+PR,+87083-260&output=embed"
+                            width="100%" height="200" style="border:0;display:block;"
+                            allowfullscreen loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="Localização Tríade da Beleza">
+                        </iframe>
+                    </div>
+                </div>
+                <div class="info-block">
+                    <strong>Horário de Funcionamento</strong>
+                    <p>
+                        Terça a Sexta: 9h às 19h<br>
+                        Sábado: 9h às 19h<br>
+                        Segunda e Domingo: Fechado
+                    </p>
+                </div>
+                <div class="info-block">
+                    <strong>Contato</strong>
+                    <p>
+                        WhatsApp: (44) 99964-1901<br>
+                        (44) 99847-3248<br>
+                        Instagram: @triade.dabeleza
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══ CTA FINAL ══════════════════════════════════════════════════════════ -->
+<section class="cta-final">
+    <div class="wrap">
+        <div class="cta-z">
+            <span class="eyebrow r">Pronta para começar?</span>
+            <h2 class="r d1">Cuide-se.<br><em>Você merece.</em></h2>
+            <p class="r d2">Reserve seu horário hoje e venha se sentir bem.</p>
+            <a href="https://wa.me/5544999641901?text=Olá!%20Gostaria%20de%20agendar%20um%20horário."
+               class="btn btn-gold r d3" target="_blank" rel="noopener">
+                Agendar pelo WhatsApp
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ FOOTER ═════════════════════════════════════════════════════════════ -->
+<footer>
+    <div class="wrap">
+        <div class="ft-grid">
+
+            <div class="ft-brand">
+                <a href="#" class="logo logo-foot" aria-label="Tríade da Beleza">
+                    <img src="logo nova otimizada.png" alt="Tríade da Beleza">
+                </a>
+                <p>Salão de beleza especializado em cabelo, manicure e sobrancelha. Um espaço feito para você se sentir bem.</p>
+                <div class="ft-social">
+                    <a href="https://instagram.com/triade.dabeleza" class="soc soc-ig" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                        </svg>
+                    </a>
+                    <a href="https://web.facebook.com/profile.php?id=61582249122116" class="soc soc-fb" target="_blank" rel="noopener" aria-label="Facebook">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12.073h2.54V9.845c0-2.507 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12.073h2.773l-.443 2.89h-2.33v6.988C20.343 21.201 24 17.064 24 12.073z"/>
+                        </svg>
+                    </a>
+                    <a href="https://wa.me/5544999641901" class="soc soc-wa" target="_blank" rel="noopener" aria-label="WhatsApp">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="ft-col">
+                <h4>Serviços</h4>
+                <ul>
+                    <li><a href="#servicos">Cabelo</a></li>
+                    <li><a href="#servicos">Coloração</a></li>
+                    <li><a href="#servicos">Revitalização</a></li>
+                    <li><a href="#servicos">Manicure e Pedicure</a></li>
+                    <li><a href="#servicos">Sobrancelha e Cílios</a></li>
+                    <li><a href="#servicos">Depilação</a></li>
+                </ul>
+            </div>
+
+            <div class="ft-col">
+                <h4>Horários</h4>
+                <ul>
+                    <li><a href="#">Ter — Sex: 9h às 19h</a></li>
+                    <li><a href="#">Sábado: 9h às 19h</a></li>
+                    <li><a href="#">Seg e Dom: Fechado</a></li>
+                </ul>
+            </div>
+
+            <div class="ft-col">
+                <h4>Localização</h4>
+                <address>
+                    Av. Pioneiro Antônio Franco de Moraes, 1775<br>
+                    Jardim Brasil<br>
+                    Maringá — PR · CEP 87083-260
+                </address>
+            </div>
+
+        </div>
+
+        <div class="ft-bottom">
+            <p>© 2025 Tríade da Beleza. Todos os direitos reservados.</p>
+            <p>Desenvolvido com cuidado.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Sempre inicia no topo ao carregar/recarregar
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+
+    // Pause video if user prefers reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('video').forEach(v => v.pause());
+    }
+
+    // Nav + logo hide-on-down / show-on-up
+    const nav     = document.getElementById('nav');
+    const navIcon = document.getElementById('nav-icon');
+    let lastY = 0;
+    window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        const hide = y > 80 && y > lastY;
+        nav.classList.toggle('up', y > 50);
+        nav.classList.toggle('nav-hidden', hide);
+        navIcon.classList.toggle('nav-hidden', hide);
+        lastY = y;
+    }, { passive: true });
+
+    // Service cards — tap to reveal on mobile
+    document.querySelectorAll('.sc').forEach(card => {
+        card.addEventListener('click', () => {
+            const isActive = card.classList.contains('active');
+            document.querySelectorAll('.sc').forEach(c => c.classList.remove('active'));
+            if (!isActive) card.classList.add('active');
+        });
+    });
+    // Prevent CTA link from toggling card when clicked
+    document.querySelectorAll('.sc-cta').forEach(btn => {
+        btn.addEventListener('click', e => e.stopPropagation());
+    });
+
+    // Active nav item on scroll
+    const pillItems = document.querySelectorAll('.nav-pill-item[data-section]');
+    const sections  = document.querySelectorAll('section[id]');
+    const sectionObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                pillItems.forEach(item => {
+                    item.classList.toggle('is-active', item.dataset.section === entry.target.id);
+                });
+            }
+        });
+    }, { threshold: 0.4 });
+    sections.forEach(s => sectionObs.observe(s));
+
+    // Hamburger
+    const ham    = document.getElementById('ham');
+    const drawer = document.getElementById('drawer');
+
+    ham.addEventListener('click', () => {
+        const open = ham.classList.toggle('open');
+        drawer.classList.toggle('open', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+    });
+
+    function closeMenu() {
+        ham.classList.remove('open');
+        drawer.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Reveal on scroll
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('on');
+                obs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+    document.querySelectorAll('.r').forEach(el => obs.observe(el));
+
+    // Vídeos: carrega um por vez só quando a seção entra na tela, toca só quando card 50%+ visível
+    (function () {
+        const scCards = Array.from(document.querySelectorAll('.sc'));
+        let sectionLoaded = false;
+
+        // Fase 1 — carrega vídeos escalonados quando a seção fica visível
+        const servSection = document.querySelector('#servicos');
+        if (servSection) {
+            const loadObs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (!e.isIntersecting || sectionLoaded) return;
+                    sectionLoaded = true;
+                    scCards.forEach((card, i) => {
+                        const vid = card.querySelector('.sc-video');
+                        if (vid && vid.readyState === 0) {
+                            setTimeout(() => vid.load(), i * 350);
+                        }
+                    });
+                });
+            }, { threshold: 0.05 });
+            loadObs.observe(servSection);
+        }
+
+        // Fase 2 — toca só quando o card está pelo menos 50% visível; pausa ao sair
+        const playObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                const vid = e.target.querySelector('.sc-video');
+                const img = e.target.querySelector('.sc-img');
+                if (!vid) return;
+                if (e.isIntersecting) {
+                    if (img) img.style.willChange = 'transform';
+                    // Garante que o vídeo carregou antes de dar play
+                    if (vid.readyState === 0) vid.load();
+                    const tryPlay = () => vid.play().catch(() => {});
+                    if (vid.readyState >= 3) {
+                        tryPlay();
+                    } else {
+                        vid.addEventListener('canplay', tryPlay, { once: true });
+                    }
+                } else {
+                    if (img) img.style.willChange = 'auto';
+                    vid.pause();
+                }
+            });
+        }, { threshold: 0.5 });
+        scCards.forEach(sc => playObs.observe(sc));
+    })();
+
+    // Hero — letter wave em toda a frase do h1
+    (function () {
+        const h1 = document.querySelector('.hero-h1');
+        if (!h1) return;
+
+        let idx = 0;
+
+        // Agrupa letras por palavra em span nowrap para evitar quebra no meio da palavra
+        function processTextNode(node) {
+            const text = node.textContent;
+            const frag = document.createDocumentFragment();
+            let i = 0;
+            while (i < text.length) {
+                if (text[i] === ' ' || text[i] === '\n') {
+                    frag.appendChild(document.createTextNode(text[i]));
+                    i++;
+                } else {
+                    let word = '';
+                    while (i < text.length && text[i] !== ' ' && text[i] !== '\n') {
+                        word += text[i++];
+                    }
+                    const wSpan = document.createElement('span');
+                    wSpan.style.cssText = 'display:inline-block;white-space:nowrap;';
+                    Array.from(word).forEach(ch => {
+                        const s = document.createElement('span');
+                        s.className = 'hero-anim-letter';
+                        s.style.animationDelay = (idx++ * 0.030) + 's';
+                        s.textContent = ch;
+                        wSpan.appendChild(s);
+                    });
+                    frag.appendChild(wSpan);
+                }
+            }
+            node.parentNode.replaceChild(frag, node);
+        }
+
+        function processNode(node) {
+            if (node.nodeType === 3) {
+                processTextNode(node);
+            } else if (node.nodeType === 1) {
+                Array.from(node.childNodes).forEach(processNode);
+            }
+        }
+
+        Array.from(h1.childNodes).forEach(processNode);
+        setTimeout(() => h1.classList.add('letters-active'), 1600);
+    })();
+
+    // ── Coverflow Gallery ────────────────────────────────────────────────
+    (function () {
+        const gallery  = document.getElementById('circGallery');
+        const viewport = gallery && gallery.querySelector('.cf-viewport');
+        const stage    = document.getElementById('circStage');
+        if (!gallery || !stage) return;
+
+        const slides = Array.from(stage.querySelectorAll('.cf-slide'));
+        const dots   = Array.from(gallery.querySelectorAll('.cf-dot'));
+        const N      = slides.length;
+        let current  = 0;
+
+        // coverflow parameters matching: rotate=0, depth=100, modifier=2.5
+        const DEPTH = 250; // px pushed back in Z per step
+
+        function getStep() {
+            const w = slides[0] ? slides[0].offsetWidth : 200;
+            return w + 50; // slide width + spaceBetween
+        }
+
+        function update() {
+            const step = getStep();
+            slides.forEach((slide, i) => {
+                let pos = i - current;
+                if (pos > N / 2)  pos -= N;
+                if (pos < -N / 2) pos += N;
+
+                const abs = Math.abs(pos);
+                const tx  = pos * step;         // X offset from center
+                const tz  = -DEPTH * abs;       // push non-center slides back
+                const op  = abs === 0 ? 1 : abs === 1 ? 0.72 : 0;
+
+                // Center the slide: left:50% + translateX shifts by -50% own width
+                slide.style.transform  = `translateX(calc(${tx}px - 50%)) translateY(-50%) translateZ(${tz}px)`;
+                slide.style.opacity    = op;
+                slide.style.visibility = abs > 1 ? 'hidden' : 'visible';
+                slide.style.zIndex     = N - abs;
+            });
+
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
+        }
+
+        function goTo(idx) { current = ((idx % N) + N) % N; update(); }
+        function next()    { goTo(current + 1); }
+        function prev()    { goTo(current - 1); }
+
+        // Clicar num slide lateral navega até ele
+        slides.forEach((slide, i) => {
+            slide.style.cursor = 'pointer';
+            slide.addEventListener('click', () => { if (i !== current) goTo(i); });
+        });
+
+        // Dots
+        dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+
+        // Nav arrows
+        const btnPrev = gallery.querySelector('.cf-prev');
+        const btnNext = gallery.querySelector('.cf-next');
+        if (btnPrev) btnPrev.addEventListener('click', () => prev());
+        if (btnNext) btnNext.addEventListener('click', () => next());
+
+        // Drag (mouse)
+        let dragStart = 0, dragging = false;
+        if (viewport) {
+            viewport.addEventListener('mousedown', e => { dragging = true; dragStart = e.clientX; });
+            window.addEventListener('mouseup', e => {
+                if (!dragging) return;
+                dragging = false;
+                const d = e.clientX - dragStart;
+                if (Math.abs(d) > 30) { d < 0 ? next() : prev(); }
+            });
+        }
+
+        // Touch swipe
+        let touchX = 0;
+        gallery.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+        gallery.addEventListener('touchend', e => {
+            const d = e.changedTouches[0].clientX - touchX;
+            if (Math.abs(d) > 40) { d < 0 ? next() : prev(); }
+        }, { passive: true });
+
+        // Re-layout on resize
+        window.addEventListener('resize', () => update(), { passive: true });
+
+        update();
+    })();
+
+    // Preloader — remove do DOM após animação terminar
+    (function () {
+        var pl = document.getElementById('preloader');
+        if (!pl) return;
+        pl.addEventListener('animationend', function (e) {
+            if (e.animationName === 'pl-bg-out') pl.remove();
+        });
+    })();
+</script>
+
+<!-- ═══ WHATSAPP FLUTUANTE ══════════════════════════════════════════════ -->
+<a href="https://wa.me/5544999641901" target="_blank" rel="noopener" class="whatsapp-float" aria-label="Falar no WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="28" height="28">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+</a>
+
+</body>
+</html>
