@@ -909,6 +909,14 @@
     .sc.active .sc-main            { transform: translateY(-88px); opacity: 0; }
     .sc.active .sc-reveal          { transform: translateY(0); opacity: 1; }
 
+    /* ── Mobile: reveal sempre visível, sem precisar de toque ── */
+    @media (max-width: 639px) {
+        .sc-overlay::before { opacity: 0; }
+        .sc-overlay::after  { opacity: 1; }
+        .sc-main            { transform: translateY(-88px); opacity: 0; }
+        .sc-reveal          { transform: translateY(0) !important; opacity: 1 !important; transition: none; }
+    }
+
     /* ─── GALERIA ────────────────────────────────────────────────────────── */
     .galeria { background: var(--dark); }
     .galeria .eyebrow { color: var(--gold-lt); }
@@ -2227,3 +2235,4 @@
 
 </body>
 </html>
+
