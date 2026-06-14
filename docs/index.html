@@ -434,17 +434,19 @@
         height: 100%;
         object-fit: cover;
         object-position: center;
-        opacity: .55;                  /* visível no mobile */
+        opacity: 1;                    /* visível no mobile */
     }
 
-    /* overlay mobile: semi-transparente para o vídeo aparecer */
+    /* overlay mobile: mancha oat só atrás do bloco de texto */
     .hero-overlay {
         position: absolute; inset: 0;
         z-index: 1;
-        background: linear-gradient(
-            to right,
-            rgba(243,238,229,.82) 0%,
-            rgba(243,238,229,.82) 100%
+        background: radial-gradient(
+            ellipse 110% 36% at 50% 24%,
+            rgba(243,238,229,.92) 0%,
+            rgba(243,238,229,.55) 45%,
+            rgba(243,238,229,.06) 74%,
+            transparent 100%
         );
     }
 
@@ -909,12 +911,23 @@
     .sc.active .sc-main            { transform: translateY(-88px); opacity: 0; }
     .sc.active .sc-reveal          { transform: translateY(0); opacity: 1; }
 
+    /* Poster alternativo só para mobile (cards 1 e 4) */
+    .sc-mobile-poster {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+    }
+
     /* ── Mobile: reveal sempre visível, sem precisar de toque ── */
     @media (max-width: 639px) {
         .sc-overlay::before { opacity: 0; }
         .sc-overlay::after  { opacity: 1; }
         .sc-main            { transform: translateY(-88px); opacity: 0; }
         .sc-reveal          { transform: translateY(0) !important; opacity: 1 !important; transition: none; }
+        .sc-mobile-poster   { display: block; }
     }
 
     /* ─── GALERIA ────────────────────────────────────────────────────────── */
@@ -1609,6 +1622,7 @@
             <div class="sc r" data-cat="cabelo">
                 <div class="sc-img">
                     <video class="sc-video" src="Card Cabelo.mp4" poster="coloração cabelo.png" muted loop playsinline preload="none"></video>
+                    <img class="sc-mobile-poster" src="coloração cabelo - card 1 serviços mobile.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
                 </div>
                 <div class="sc-overlay"></div>
                 <div class="sc-body">
@@ -1693,6 +1707,7 @@
             <div class="sc r d3" data-cat="estetica">
                 <div class="sc-img">
                     <video class="sc-video" src="maquiagem.mp4" poster="hidratação.png" muted loop playsinline preload="none"></video>
+                    <img class="sc-mobile-poster" src="maquiagem - card 4 serviços mobile.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
                 </div>
                 <div class="sc-overlay"></div>
                 <div class="sc-body">
