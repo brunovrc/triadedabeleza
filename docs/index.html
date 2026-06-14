@@ -1975,9 +1975,11 @@
 </footer>
 
 <script>
-    // Sempre inicia no topo ao carregar/recarregar
+    // Sempre inicia no topo ao carregar/recarregar (cobre bfcache do Safari iOS)
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
+    window.addEventListener('load',     () => window.scrollTo(0, 0));
+    window.addEventListener('pageshow', (e) => window.scrollTo(0, 0));
 
     // Pause video if user prefers reduced motion
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
