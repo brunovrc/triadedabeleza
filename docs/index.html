@@ -374,6 +374,7 @@
         border: none;
         padding: 8px;
         z-index: 600;
+        margin-left: auto;
     }
     .hamburger span {
         display: block;
@@ -433,16 +434,16 @@
         height: 100%;
         object-fit: cover;
         object-position: center;
-        opacity: .18;                  /* bem sutil no mobile — leve textura */
+        opacity: .55;                  /* visível no mobile */
     }
 
-    /* overlay mobile: mantém o oat claro sobre o vídeo */
+    /* overlay mobile: semi-transparente para o vídeo aparecer */
     .hero-overlay {
         position: absolute; inset: 0;
         z-index: 1;
         background: linear-gradient(
             to right,
-            rgba(243,238,229,.96) 0%,
+            rgba(243,238,229,.82) 0%,
             rgba(243,238,229,.82) 100%
         );
     }
@@ -597,7 +598,7 @@
 
     .img-frame {
         width: 100%;
-        aspect-ratio: 4/3;
+        aspect-ratio: 3/4;
         background: var(--oat-deep);
         border-radius: 4px;
         overflow: hidden;
@@ -1599,7 +1600,7 @@
             <!-- 01 Cabelo -->
             <div class="sc r" data-cat="cabelo">
                 <div class="sc-img">
-                    <video class="sc-video" src="Card Cabelo.mp4" muted loop playsinline preload="none"></video>
+                    <video class="sc-video" src="Card Cabelo.mp4" poster="coloração cabelo.png" muted loop playsinline preload="none"></video>
                 </div>
                 <div class="sc-overlay"></div>
                 <div class="sc-body">
@@ -1630,7 +1631,7 @@
             <!-- 02 Unhas -->
             <div class="sc r d1" data-cat="unhas">
                 <div class="sc-img">
-                    <video class="sc-video" src="Card unhas.mp4" muted loop playsinline preload="none"></video>
+                    <video class="sc-video" src="Card unhas.mp4" poster="unha em gel.png" muted loop playsinline preload="none"></video>
                 </div>
                 <div class="sc-overlay"></div>
                 <div class="sc-body">
@@ -1657,7 +1658,7 @@
             <!-- 03 Sobrancelhas & Cílios -->
             <div class="sc r d2" data-cat="sobrancelhas">
                 <div class="sc-img">
-                    <video class="sc-video" src="cílios e sobrancelha card.mp4" muted loop playsinline preload="none"></video>
+                    <video class="sc-video" src="cílios e sobrancelha card.mp4" poster="sobrancelha.png" muted loop playsinline preload="none"></video>
                 </div>
                 <div class="sc-overlay"></div>
                 <div class="sc-body">
@@ -1683,7 +1684,7 @@
             <!-- 04 Estética & Beleza -->
             <div class="sc r d3" data-cat="estetica">
                 <div class="sc-img">
-                    <video class="sc-video" src="maquiagem.mp4" muted loop playsinline preload="none"></video>
+                    <video class="sc-video" src="maquiagem.mp4" poster="hidratação.png" muted loop playsinline preload="none"></video>
                 </div>
                 <div class="sc-overlay"></div>
                 <div class="sc-body">
@@ -1723,31 +1724,31 @@
                 <div class="cf-track" id="circStage">
                     <div class="cf-slide">
                         <div class="cf-card">
-                            <img src="coloração cabelo.png" alt="Coloração" loading="lazy">
+                            <img src="coloração cabelo.png" alt="Coloração" loading="lazy" decoding="async">
                             <div class="cf-label">Coloração</div>
                         </div>
                     </div>
                     <div class="cf-slide">
                         <div class="cf-card">
-                            <img src="balayage.png" alt="Balayage" loading="lazy">
+                            <img src="balayage.png" alt="Balayage" loading="lazy" decoding="async">
                             <div class="cf-label">Balayage</div>
                         </div>
                     </div>
                     <div class="cf-slide">
                         <div class="cf-card">
-                            <img src="unha em gel.png" alt="Unhas em Gel" loading="lazy">
+                            <img src="unha em gel.png" alt="Unhas em Gel" loading="lazy" decoding="async">
                             <div class="cf-label">Unhas em Gel</div>
                         </div>
                     </div>
                     <div class="cf-slide">
                         <div class="cf-card">
-                            <img src="sobrancelha.png" alt="Sobrancelha" loading="lazy">
+                            <img src="sobrancelha.png" alt="Sobrancelha" loading="lazy" decoding="async">
                             <div class="cf-label">Sobrancelha</div>
                         </div>
                     </div>
                     <div class="cf-slide">
                         <div class="cf-card">
-                            <img src="hidratação.png" alt="Hidratação" loading="lazy">
+                            <img src="hidratação.png" alt="Hidratação" loading="lazy" decoding="async">
                             <div class="cf-label">Hidratação</div>
                         </div>
                     </div>
@@ -1936,8 +1937,8 @@
         </div>
 
         <div class="ft-bottom">
-            <p>© 2025 Tríade da Beleza. Todos os direitos reservados.</p>
-            <p>Desenvolvido com cuidado.</p>
+            <p>© Tríade da Beleza. Todos os direitos reservados.</p>
+            <p>Desenvolvido por <a href="https://teczz.com.br" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px;">teczz.com.br</a></p>
         </div>
     </div>
 </footer>
@@ -2023,6 +2024,10 @@
     // Vídeos: carrega um por vez só quando a seção entra na tela, toca só quando card 50%+ visível
     (function () {
         const scCards = Array.from(document.querySelectorAll('.sc'));
+        // Mobile: não carrega vídeos — mostra só o poster para economizar dados
+        const isMobile = window.matchMedia('(max-width: 639px)').matches;
+        if (isMobile) return;
+
         let sectionLoaded = false;
 
         // Fase 1 — carrega vídeos escalonados quando a seção fica visível
@@ -2035,7 +2040,7 @@
                     scCards.forEach((card, i) => {
                         const vid = card.querySelector('.sc-video');
                         if (vid && vid.readyState === 0) {
-                            setTimeout(() => vid.load(), i * 350);
+                            setTimeout(() => vid.load(), i * 500);
                         }
                     });
                 });
